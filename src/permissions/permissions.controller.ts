@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   HttpCode,
   HttpStatus,
   UseInterceptors,
@@ -17,26 +18,23 @@ import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { PermissionResponseDto } from './dto/permission-response.dto';
 import { UseSlaveDB } from '../common/decorators/use-slave-db.decorator';
 import { DbContextInterceptor } from '../common/interceptors/db-context.interceptor';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
+import { PaginatedResponseDto } from '../common/dto/paginated-response.dto';
 
-@Controller('permissions')
+@Controller({ path: 'permissions', version: '1' })
 @UseInterceptors(DbContextInterceptor)
 export class PermissionsController {
   constructor(private readonly permissionsService: PermissionsService) {}
 
   @Get()
   @UseSlaveDB()
-  async findAll(): Promise<PermissionResponseDto[]> {
-    const permissions = await this.permissionsService.findAll();
-    return permissions.map((permission) => new PermissionResponseDto({
-      id: permission.id,
-      name: permission.name,
-      resource: permission.resource,
-      action: permission.action,
-      description: permission.description,
-      fullName: permission.fullName,
-      createdAt: permission.createdAt,
-      updatedAt: permission.updatedAt,
-    }));
+  async findAll(
+    @Query() paginationQuery: PaginationQueryDto,
+  ): Promise<PaginatedResponseDto<PermissionResponseDto>> {
+    return this.permissionsService.findPaginated(
+      paginationQuery.page,
+      paginationQuery.limit,
+    );
   }
 
   @Get(':id')

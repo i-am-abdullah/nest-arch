@@ -4,6 +4,7 @@ import { Role } from '../../domain/role.domain';
 export abstract class RoleAbstractRepository implements IBaseRepository<Role> {
   abstract findOne(id: string): Promise<Role | null>;
   abstract findAll(): Promise<Role[]>;
+  abstract findPaginated(page: number, limit: number): Promise<{ data: Role[]; total: number }>;
   abstract create(data: Partial<Role>): Promise<Role>;
   abstract update(id: string, data: Partial<Role>): Promise<Role>;
   abstract delete(id: string): Promise<void>;

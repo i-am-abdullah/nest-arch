@@ -18,17 +18,23 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 import { CommentResponseDto } from './dto/comment-response.dto';
 import { UseSlaveDB } from '../common/decorators/use-slave-db.decorator';
 import { DbContextInterceptor } from '../common/interceptors/db-context.interceptor';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
+import { PaginatedResponseDto } from '../common/dto/paginated-response.dto';
 
-@Controller('comments')
+@Controller({ path: 'comments', version: '1' })
 @UseInterceptors(DbContextInterceptor)
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
   @Get()
   @UseSlaveDB()
-  async findAll(): Promise<CommentResponseDto[]> {
-    const comments = await this.commentsService.findAll();
-    return comments.map((comment) => new CommentResponseDto(comment));
+  async findAll(
+    @Query() paginationQuery: PaginationQueryDto,
+  ): Promise<PaginatedResponseDto<CommentResponseDto>> {
+    return this.commentsService.findPaginated(
+      paginationQuery.page,
+      paginationQuery.limit,
+    );
   }
 
   @Get('post/:postId')

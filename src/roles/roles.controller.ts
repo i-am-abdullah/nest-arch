@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   HttpCode,
   HttpStatus,
   UseInterceptors,
@@ -18,17 +19,23 @@ import { RoleResponseDto } from './dto/role-response.dto';
 import { AssignPermissionDto } from './dto/assign-permission.dto';
 import { UseSlaveDB } from '../common/decorators/use-slave-db.decorator';
 import { DbContextInterceptor } from '../common/interceptors/db-context.interceptor';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
+import { PaginatedResponseDto } from '../common/dto/paginated-response.dto';
 
-@Controller('roles')
+@Controller({ path: 'roles', version: '1' })
 @UseInterceptors(DbContextInterceptor)
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
   @Get()
   @UseSlaveDB()
-  async findAll(): Promise<RoleResponseDto[]> {
-    const roles = await this.rolesService.findAll();
-    return roles.map((role) => new RoleResponseDto(role));
+  async findAll(
+    @Query() paginationQuery: PaginationQueryDto,
+  ): Promise<PaginatedResponseDto<RoleResponseDto>> {
+    return this.rolesService.findPaginated(
+      paginationQuery.page,
+      paginationQuery.limit,
+    );
   }
 
   @Get(':id')

@@ -16,7 +16,7 @@ import { UserAbstractRepository } from './infrastructure/persistence/user.abstra
       useClass: UserRepository,
     },
   ],
-  exports: [UsersService],
+  exports: [UsersService, UserAbstractRepository],
 })
 export class UsersModule {}
 

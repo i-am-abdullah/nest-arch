@@ -20,6 +20,15 @@ export class UserEntity {
   @Property({ type: 'varchar', length: 255 })
   name!: string;
 
+  @Property({ type: 'varchar', length: 255, nullable: false })
+  password!: string;
+
+  @Property({ type: 'text', nullable: true })
+  refreshToken?: string;
+
+  @Property({ type: 'timestamp', nullable: true })
+  refreshTokenExpiresAt?: Date;
+
   @ManyToMany(() => RoleEntity, undefined, {
     pivotTable: 'user_roles',
     joinColumn: 'user_id',

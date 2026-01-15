@@ -2,7 +2,8 @@ import { EntityManager, EntityName } from '@mikro-orm/core';
 import { RequestContext } from '@mikro-orm/core';
 import { IBaseRepository } from '../interfaces/repository.interface';
 
-export abstract class BaseRepository<TDomain, TEntity> implements IBaseRepository<TDomain> {
+export abstract class BaseRepository<TDomain, TEntity> 
+  implements IBaseRepository<TDomain> {
   protected abstract readonly entityName: EntityName<TEntity>;
   protected abstract readonly mapper: {
     toDomain(entity: TEntity): TDomain;
@@ -35,6 +36,25 @@ export abstract class BaseRepository<TDomain, TEntity> implements IBaseRepositor
     return this.mapper.toDomainList(entities as TEntity[]);
   }
 
+  async findPaginated(
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{ data: TDomain[]; total: number }> {
+    const [entities, total] = await this.entityManager.findAndCount(
+      this.entityName as any,
+      {},
+      {
+        limit,
+        offset: (page - 1) * limit,
+      },
+    );
+
+    return {
+      data: this.mapper.toDomainList(entities as TEntity[]),
+      total,
+    };
+  }
+
   async create(data: Partial<TDomain>): Promise<TDomain> {
     // Build domain object using domain factory method
     const domain = this.buildDomain(data);
@@ -46,7 +66,7 @@ export abstract class BaseRepository<TDomain, TEntity> implements IBaseRepositor
     await this.setupRelationships(entity, data);
     
     // Persist to database
-    await this.entityManager.persistAndFlush(entity as any);
+    await this.entityManager.persist(entity as any).flush();
     
     // Return domain object
     return this.mapper.toDomain(entity);
@@ -98,7 +118,7 @@ export abstract class BaseRepository<TDomain, TEntity> implements IBaseRepositor
       throw new Error(`Entity with id ${id} not found`);
     }
 
-    await this.entityManager.removeAndFlush(entity);
+    await this.entityManager.remove(entity).flush();
   }
 
   protected abstract updateDomain(domain: TDomain, data: Partial<TDomain>): TDomain;

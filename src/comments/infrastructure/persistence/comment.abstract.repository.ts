@@ -6,6 +6,7 @@ export abstract class CommentAbstractRepository
 {
   abstract findOne(id: string): Promise<Comment | null>;
   abstract findAll(): Promise<Comment[]>;
+  abstract findPaginated(page: number, limit: number): Promise<{ data: Comment[]; total: number }>;
   abstract create(data: Partial<Comment>): Promise<Comment>;
   abstract update(id: string, data: Partial<Comment>): Promise<Comment>;
   abstract delete(id: string): Promise<void>;

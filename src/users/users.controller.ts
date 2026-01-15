@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   HttpCode,
   HttpStatus,
   UseInterceptors,
@@ -17,17 +18,23 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { UseSlaveDB } from '../common/decorators/use-slave-db.decorator';
 import { DbContextInterceptor } from '../common/interceptors/db-context.interceptor';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
+import { PaginatedResponseDto } from '../common/dto/paginated-response.dto';
 
-@Controller('users')
+@Controller({ path: 'users', version: '1' })
 @UseInterceptors(DbContextInterceptor)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
   @UseSlaveDB()
-  async findAll(): Promise<UserResponseDto[]> {
-    const users = await this.usersService.findAll();
-    return users.map((user) => new UserResponseDto(user));
+  async findAll(
+    @Query() paginationQuery: PaginationQueryDto,
+  ): Promise<PaginatedResponseDto<UserResponseDto>> {
+    return this.usersService.findPaginated(
+      paginationQuery.page,
+      paginationQuery.limit,
+    );
   }
 
   @Get(':id')

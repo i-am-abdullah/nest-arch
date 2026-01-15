@@ -18,19 +18,26 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { PostResponseDto } from './dto/post-response.dto';
 import { UseSlaveDB } from '../common/decorators/use-slave-db.decorator';
 import { DbContextInterceptor } from '../common/interceptors/db-context.interceptor';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
+import { PaginatedResponseDto } from '../common/dto/paginated-response.dto';
 
-@Controller('posts')
+@Controller({ path: 'posts', version: '1' })
 @UseInterceptors(DbContextInterceptor)
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Get()
   @UseSlaveDB()
-  async findAll(@Query('published') published?: string): Promise<PostResponseDto[]> {
-    const posts = published === 'true'
-      ? await this.postsService.findPublished()
-      : await this.postsService.findAll();
-    return posts.map((post) => new PostResponseDto(post));
+  async findAll(
+    @Query() paginationQuery: PaginationQueryDto,
+    @Query('published') published?: string,
+  ): Promise<PaginatedResponseDto<PostResponseDto>> {
+    // For now, pagination works with findAll. 
+    // If published filter is needed with pagination, it should be implemented in repository
+    return this.postsService.findPaginated(
+      paginationQuery.page,
+      paginationQuery.limit,
+    );
   }
 
   @Get('author/:authorId')

@@ -8,6 +8,7 @@ import { Reflector } from '@nestjs/core';
 import { MikroORM, RequestContext } from '@mikro-orm/core';
 import { Observable } from 'rxjs';
 import { USE_SLAVE_DB } from '../decorators/use-slave-db.decorator';
+import { getMetadataFromContext } from '../utils/get-metadata-from-context.util';
 
 @Injectable()
 export class DbContextInterceptor implements NestInterceptor {
@@ -17,9 +18,10 @@ export class DbContextInterceptor implements NestInterceptor {
   ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const useSlave = this.reflector.get<boolean>(
+    const useSlave = getMetadataFromContext<boolean>(
+      this.reflector,
+      context,
       USE_SLAVE_DB,
-      context.getHandler(),
     );
 
     if (useSlave) {

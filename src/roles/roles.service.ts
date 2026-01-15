@@ -2,6 +2,8 @@ import { Injectable, NotFoundException, ConflictException } from '@nestjs/common
 import { IBaseService } from '../common/interfaces/service.interface';
 import { Role } from './domain/role.domain';
 import { RoleAbstractRepository } from './infrastructure/persistence/role.abstract.repository';
+import { PaginatedResponseDto } from '../common/dto/paginated-response.dto';
+import { RoleResponseDto } from './dto/role-response.dto';
 
 @Injectable()
 export class RolesService implements IBaseService<Role> {
@@ -13,6 +15,16 @@ export class RolesService implements IBaseService<Role> {
 
   async findAll(): Promise<Role[]> {
     return this.roleRepository.findAll();
+  }
+
+  async findPaginated(
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<PaginatedResponseDto<RoleResponseDto>> {
+    const { data, total } = await this.roleRepository.findPaginated(page, limit);
+    // Map domain objects to DTOs efficiently
+    const dtoData = data.map((role) => new RoleResponseDto(role));
+    return new PaginatedResponseDto(dtoData, total, page, limit);
   }
 
   async create(data: Partial<Role>): Promise<Role> {

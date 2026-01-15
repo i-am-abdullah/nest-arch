@@ -29,6 +29,25 @@ export class UserRepository
     return domain.update(data);
   }
 
+  async create(data: Partial<User & { password?: string }>): Promise<User> {
+    // Build domain object (password is not part of domain)
+    const domain = this.buildDomain(data);
+    
+    // Convert domain to entity
+    const entity = this.mapper.toEntity(domain);
+    
+    // Set password if provided (password is only in entity layer)
+    if (data.password) {
+      entity.password = data.password;
+    }
+    
+    // Persist to database
+    await this.entityManager.persist(entity).flush();
+    
+    // Return domain object (without password)
+    return this.mapper.toDomain(entity);
+  }
+
   async findOneWithRoles(id: string): Promise<User | null> {
     const entity = await this.entityManager.findOne(
       UserEntity,
@@ -88,5 +107,48 @@ export class UserRepository
     await this.entityManager.flush();
 
     return UserMapper.toDomain(userEntity);
+  }
+
+  async findByEmail(email: string): Promise<User | null> {
+    const entity = await this.entityManager.findOne(
+      UserEntity,
+      { email },
+      { populate: ['roles', 'roles.permissions'] },
+    );
+    return entity ? UserMapper.toDomain(entity) : null;
+  }
+
+  async getUserEntityWithPassword(id: string): Promise<UserEntity | null> {
+    return this.entityManager.findOne(UserEntity, { id });
+  }
+
+  async findByRefreshToken(refreshToken: string): Promise<UserEntity | null> {
+    return this.entityManager.findOne(
+      UserEntity,
+      { refreshToken },
+      { populate: ['roles', 'roles.permissions'] },
+    );
+  }
+
+  async updateRefreshToken(userId: string, refreshToken: string, expiresAt: Date): Promise<void> {
+    const userEntity = await this.entityManager.findOne(UserEntity, { id: userId });
+    if (!userEntity) {
+      throw new Error(`User with id ${userId} not found`);
+    }
+
+    userEntity.refreshToken = refreshToken;
+    userEntity.refreshTokenExpiresAt = expiresAt;
+    await this.entityManager.flush();
+  }
+
+  async clearRefreshToken(userId: string): Promise<void> {
+    const userEntity = await this.entityManager.findOne(UserEntity, { id: userId });
+    if (!userEntity) {
+      throw new Error(`User with id ${userId} not found`);
+    }
+
+    userEntity.refreshToken = undefined;
+    userEntity.refreshTokenExpiresAt = undefined;
+    await this.entityManager.flush();
   }
 }

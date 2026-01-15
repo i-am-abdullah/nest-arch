@@ -2,6 +2,8 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { IBaseService } from '../common/interfaces/service.interface';
 import { Post } from './domain/post.domain';
 import { PostAbstractRepository } from './infrastructure/persistence/post.abstract.repository';
+import { PaginatedResponseDto } from '../common/dto/paginated-response.dto';
+import { PostResponseDto } from './dto/post-response.dto';
 
 @Injectable()
 export class PostsService implements IBaseService<Post> {
@@ -15,6 +17,16 @@ export class PostsService implements IBaseService<Post> {
 
   async findAll(): Promise<Post[]> {
     return this.postRepository.findAll();
+  }
+
+  async findPaginated(
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<PaginatedResponseDto<PostResponseDto>> {
+    const { data, total } = await this.postRepository.findPaginated(page, limit);
+    // Map domain objects to DTOs efficiently
+    const dtoData = data.map((post) => new PostResponseDto(post));
+    return new PaginatedResponseDto(dtoData, total, page, limit);
   }
 
   async create(data: Partial<Post>): Promise<Post> {

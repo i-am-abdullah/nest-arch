@@ -2,6 +2,8 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { IBaseService } from '../common/interfaces/service.interface';
 import { Comment } from './domain/comment.domain';
 import { CommentAbstractRepository } from './infrastructure/persistence/comment.abstract.repository';
+import { PaginatedResponseDto } from '../common/dto/paginated-response.dto';
+import { CommentResponseDto } from './dto/comment-response.dto';
 
 @Injectable()
 export class CommentsService implements IBaseService<Comment> {
@@ -15,6 +17,16 @@ export class CommentsService implements IBaseService<Comment> {
 
   async findAll(): Promise<Comment[]> {
     return this.commentRepository.findAll();
+  }
+
+  async findPaginated(
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<PaginatedResponseDto<CommentResponseDto>> {
+    const { data, total } = await this.commentRepository.findPaginated(page, limit);
+    // Map domain objects to DTOs efficiently
+    const dtoData = data.map((comment) => new CommentResponseDto(comment));
+    return new PaginatedResponseDto(dtoData, total, page, limit);
   }
 
   async create(data: Partial<Comment>): Promise<Comment> {

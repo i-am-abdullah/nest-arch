@@ -1,0 +1,704 @@
+{
+  "namespaces": [
+    "public"
+  ],
+  "name": "public",
+  "tables": [
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(100)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 100,
+          "mappedType": "string"
+        },
+        "resource": {
+          "name": "resource",
+          "type": "varchar(50)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 50,
+          "mappedType": "string"
+        },
+        "action": {
+          "name": "action",
+          "type": "varchar(50)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 50,
+          "mappedType": "string"
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "text"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "default": "'now()'",
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "default": "'now()'",
+          "mappedType": "datetime"
+        }
+      },
+      "name": "permissions",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "resource"
+          ],
+          "composite": false,
+          "keyName": "permissions_resource_index",
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "action"
+          ],
+          "composite": false,
+          "keyName": "permissions_action_index",
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "permissions_resource_action_unique",
+          "columnNames": [
+            "resource",
+            "action"
+          ],
+          "composite": true,
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "permissions_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(100)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 100,
+          "mappedType": "string"
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "text"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "default": "'now()'",
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "default": "'now()'",
+          "mappedType": "datetime"
+        }
+      },
+      "name": "roles",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "name"
+          ],
+          "composite": false,
+          "keyName": "roles_name_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "roles_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "role_id": {
+          "name": "role_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
+        },
+        "permission_id": {
+          "name": "permission_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
+        }
+      },
+      "name": "role_permissions",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "role_permissions_pkey",
+          "columnNames": [
+            "role_id",
+            "permission_id"
+          ],
+          "composite": true,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "role_permissions_role_id_foreign": {
+          "constraintName": "role_permissions_role_id_foreign",
+          "columnNames": [
+            "role_id"
+          ],
+          "localTableName": "public.role_permissions",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.roles",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        },
+        "role_permissions_permission_id_foreign": {
+          "constraintName": "role_permissions_permission_id_foreign",
+          "columnNames": [
+            "permission_id"
+          ],
+          "localTableName": "public.role_permissions",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.permissions",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "password": {
+          "name": "password",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "refresh_token": {
+          "name": "refresh_token",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "text"
+        },
+        "refresh_token_expires_at": {
+          "name": "refresh_token_expires_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "default": "'now()'",
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "default": "'now()'",
+          "mappedType": "datetime"
+        }
+      },
+      "name": "users",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "email"
+          ],
+          "composite": false,
+          "keyName": "users_email_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "users_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
+        },
+        "role_id": {
+          "name": "role_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
+        }
+      },
+      "name": "user_roles",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "user_roles_pkey",
+          "columnNames": [
+            "user_id",
+            "role_id"
+          ],
+          "composite": true,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "user_roles_user_id_foreign": {
+          "constraintName": "user_roles_user_id_foreign",
+          "columnNames": [
+            "user_id"
+          ],
+          "localTableName": "public.user_roles",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.users",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        },
+        "user_roles_role_id_foreign": {
+          "constraintName": "user_roles_role_id_foreign",
+          "columnNames": [
+            "role_id"
+          ],
+          "localTableName": "public.user_roles",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.roles",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "author_id": {
+          "name": "author_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
+        },
+        "published": {
+          "name": "published",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "false",
+          "mappedType": "boolean"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "default": "'now()'",
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "default": "'now()'",
+          "mappedType": "datetime"
+        }
+      },
+      "name": "posts",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "author_id"
+          ],
+          "composite": false,
+          "keyName": "posts_author_id_index",
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "published"
+          ],
+          "composite": false,
+          "keyName": "posts_published_index",
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "posts_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "posts_author_id_foreign": {
+          "constraintName": "posts_author_id_foreign",
+          "columnNames": [
+            "author_id"
+          ],
+          "localTableName": "public.posts",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.users",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "author_id": {
+          "name": "author_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
+        },
+        "post_id": {
+          "name": "post_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "default": "'now()'",
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "default": "'now()'",
+          "mappedType": "datetime"
+        }
+      },
+      "name": "comments",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "author_id"
+          ],
+          "composite": false,
+          "keyName": "comments_author_id_index",
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "post_id"
+          ],
+          "composite": false,
+          "keyName": "comments_post_id_index",
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "comments_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "comments_author_id_foreign": {
+          "constraintName": "comments_author_id_foreign",
+          "columnNames": [
+            "author_id"
+          ],
+          "localTableName": "public.comments",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.users",
+          "updateRule": "cascade"
+        },
+        "comments_post_id_foreign": {
+          "constraintName": "comments_post_id_foreign",
+          "columnNames": [
+            "post_id"
+          ],
+          "localTableName": "public.comments",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.posts",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {}
+    }
+  ],
+  "nativeEnums": {}
+}

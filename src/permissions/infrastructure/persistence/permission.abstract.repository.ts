@@ -6,6 +6,7 @@ export abstract class PermissionAbstractRepository
 {
   abstract findOne(id: string): Promise<Permission | null>;
   abstract findAll(): Promise<Permission[]>;
+  abstract findPaginated(page: number, limit: number): Promise<{ data: Permission[]; total: number }>;
   abstract create(data: Partial<Permission>): Promise<Permission>;
   abstract update(id: string, data: Partial<Permission>): Promise<Permission>;
   abstract delete(id: string): Promise<void>;
